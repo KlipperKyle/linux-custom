@@ -5,7 +5,7 @@
 #pkgbase=linux              # Build stock -ARCH kernel
 pkgbase=linux-custom        # Build kernel with a different name
 _srcname=linux-3.14
-pkgver=3.14.9
+pkgver=3.14.10
 pkgrel=1
 arch=('i686' 'x86_64')
 url="http://www.kernel.org/"
@@ -23,19 +23,17 @@ source=("https://www.kernel.org/pub/linux/kernel/v3.x/${_srcname}.tar.xz"
         '0002-module-allow-multiple-calls-to-MODULE_DEVICE_TABLE-p.patch'
         '0003-module-remove-MODULE_GENERIC_TABLE.patch'
         '0006-genksyms-fix-typeof-handling.patch'
-        '0012-fix-saa7134.patch'
         )
 
 sha256sums=('61558aa490855f42b6340d1a1596be47454909629327c49a5e4e10268065dffa'
-            '55c76714bb9c12c600a142d7ad7ba028447d6da630a84af37968579fc9bb1e73'
+            'e93bcbbd4568449e771f420ddd281a797b8df92ff265d59f849c3f53172fd95e'
             'f44bd4a40f9ce0675a5601c4a1e1688c7368118c4a5374be9832611b348eb956'
             'f0d90e756f14533ee67afda280500511a62465b4f76adcc5effa95a40045179c'
             'faced4eb4c47c4eb1a9ee8a5bf8a7c4b49d6b4d78efbe426e410730e6267d182'
             '6d72e14552df59e6310f16c176806c408355951724cd5b48a47bf01591b8be02'
             '52dec83a8805a8642d74d764494acda863e0aa23e3d249e80d4b457e20a3fd29'
             '65d58f63215ee3c5f9c4fc6bce36fc5311a6c7dbdbe1ad29de40647b47ff9c0d'
-            'cf2e7a2d00787f754028e7459688c2755a406e632ce48b60952fa4ff7ed6f4b7'
-            '79359454c9d8446eb55add2b1cdbf8332bd67dafb01fefb5b1ca090225f64d18')
+            'cf2e7a2d00787f754028e7459688c2755a406e632ce48b60952fa4ff7ed6f4b7')
 
 _kernelname=${pkgbase#linux}
 
@@ -63,11 +61,6 @@ prepare() {
   # Fix generation of symbol CRCs
   # http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=dc53324060f324e8af6867f57bf4891c13c6ef18
   patch -p1 -i "${srcdir}/0006-genksyms-fix-typeof-handling.patch"
-
-  # fix saa7134 video
-  # https://bugs.archlinux.org/task/39904
-  # https://bugzilla.kernel.org/show_bug.cgi?id=73361
-  patch -Np1 -i "${srcdir}/0012-fix-saa7134.patch"
 
   cat "${srcdir}/config.custom" > ./.config
 

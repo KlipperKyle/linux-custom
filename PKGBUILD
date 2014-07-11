@@ -5,7 +5,7 @@
 #pkgbase=linux              # Build stock -ARCH kernel
 pkgbase=linux-custom        # Build kernel with a different name
 _srcname=linux-3.14
-pkgver=3.14.11
+pkgver=3.14.12
 pkgrel=1
 arch=('i686' 'x86_64')
 url="http://www.kernel.org/"
@@ -15,7 +15,7 @@ options=('!strip')
 source=("https://www.kernel.org/pub/linux/kernel/v3.x/${_srcname}.tar.xz"
         "https://www.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.xz"
         # the main kernel config files
-        'config.custom'
+        'config' 'config.x86_64'
         # standard config files for mkinitcpio ramdisk
         'linux.preset'
         'change-default-console-loglevel.patch'
@@ -26,7 +26,8 @@ source=("https://www.kernel.org/pub/linux/kernel/v3.x/${_srcname}.tar.xz"
         )
 
 sha256sums=('61558aa490855f42b6340d1a1596be47454909629327c49a5e4e10268065dffa'
-            '3f290fb547cb4afe23bf520c8c863b6d1e090814f4a6fa0080ed51b4afd9a409'
+            'b50d9569bc2e47f3be996fdbcb043e7eace9c92cbcb77d825dd1493f2d399475'
+            '73056e6f23119c53c79f36f4c2faf37dd5a195d63605fa26392aa11ae9edfb62'
             'f44bd4a40f9ce0675a5601c4a1e1688c7368118c4a5374be9832611b348eb956'
             'f0d90e756f14533ee67afda280500511a62465b4f76adcc5effa95a40045179c'
             'faced4eb4c47c4eb1a9ee8a5bf8a7c4b49d6b4d78efbe426e410730e6267d182'
@@ -34,6 +35,7 @@ sha256sums=('61558aa490855f42b6340d1a1596be47454909629327c49a5e4e10268065dffa'
             '52dec83a8805a8642d74d764494acda863e0aa23e3d249e80d4b457e20a3fd29'
             '65d58f63215ee3c5f9c4fc6bce36fc5311a6c7dbdbe1ad29de40647b47ff9c0d'
             'cf2e7a2d00787f754028e7459688c2755a406e632ce48b60952fa4ff7ed6f4b7')
+
 
 _kernelname=${pkgbase#linux}
 
@@ -62,7 +64,11 @@ prepare() {
   # http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=dc53324060f324e8af6867f57bf4891c13c6ef18
   patch -p1 -i "${srcdir}/0006-genksyms-fix-typeof-handling.patch"
 
-  cat "${srcdir}/config.custom" > ./.config
+  if [ "${CARCH}" = "x86_64" ]; then
+    cat "${srcdir}/config.x86_64" > ./.config
+  else
+    cat "${srcdir}/config" > ./.config
+  fi
 
   if [ "${_kernelname}" != "" ]; then
     sed -i "s|CONFIG_LOCALVERSION=.*|CONFIG_LOCALVERSION=\"${_kernelname}\"|g" ./.config
